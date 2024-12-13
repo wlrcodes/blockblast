@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Blast Helper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            margin: auto;
+            max-width: 600px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .upload-btn {
+            margin-top: 20px;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Block Blast Move Helper</h1>
+        <p>Upload a screenshot of your Block Blast game, and we'll suggest your next moves.</p>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="imageInput" accept="image/*" required>
+            <button class="upload-btn" type="submit">Upload and Analyze</button>
+        </form>
+        <div id="output" class="output" hidden>
+            <h3>Suggested Moves:</h3>
+            <p id="suggestedMoves">Processing...</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const imageInput = document.getElementById('imageInput');
+            const outputDiv = document.getElementById('output');
+            const suggestedMoves = document.getElementById('suggestedMoves');
+
+            if (imageInput.files.length === 0) {
+                alert('Please select an image file!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', imageInput.files[0]);
+
+            outputDiv.hidden = false;
+            suggestedMoves.textContent = 'Processing...';
+
+            try {
+                const response = await fetch('https://your-backend-url.com/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error processing the image.');
+                }
+
+                const result = await response.json();
+                suggestedMoves.textContent = result.moves || 'No moves found';
+            } catch (error) {
+                suggestedMoves.textContent = 'An error occurred: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
