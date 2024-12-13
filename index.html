@@ -6,7 +6,9 @@
     <title>Block Blast Move Helper</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
             text-align: center;
             margin: 20px;
         }
@@ -14,18 +16,37 @@
             margin: auto;
             max-width: 600px;
             padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
+            border: 5px solid #ffcc00;
+            border-radius: 20px;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
-        .upload-btn {
-            margin-top: 20px;
+        h1 {
+            color: #ff4500;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        button {
+            background-color: #32cd32;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            background-color: #28a745;
+        }
+        input[type="file"] {
+            margin-top: 10px;
         }
         .output {
             margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
+            padding: 15px;
+            border: 3px dashed #ffa500;
+            border-radius: 10px;
+            background-color: #fffaf0;
         }
     </style>
     <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
@@ -36,7 +57,7 @@
         <p>Upload a screenshot of your Block Blast game, and we'll suggest your next moves.</p>
         <form id="uploadForm" enctype="multipart/form-data">
             <input type="file" id="imageInput" accept="image/*" required>
-            <button class="upload-btn" type="submit">Upload and Analyze</button>
+            <button type="submit">Upload and Analyze</button>
         </form>
         <div id="output" class="output" hidden>
             <h3>Suggested Moves:</h3>
