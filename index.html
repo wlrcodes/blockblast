@@ -45,55 +45,58 @@
     </div>
 
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const imageInput = document.getElementById('imageInput');
-            const outputDiv = document.getElementById('output');
-            const suggestedMoves = document.getElementById('suggestedMoves');
+        document.getElementById('uploadForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const imageInput = document.getElementById('imageInput');
+    const outputDiv = document.getElementById('output');
+    const suggestedMoves = document.getElementById('suggestedMoves');
 
-            if (imageInput.files.length === 0) {
-                alert('Please select an image file!');
-                return;
-            }
+    if (imageInput.files.length === 0) {
+        alert('Please select an image file!');
+        return;
+    }
 
-            const reader = new FileReader();
-            reader.onload = async function (e) {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = function () {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = function () {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
 
-                    // Process the image with OpenCV.js
-                    const src = cv.imread(canvas);
-                    const gray = new cv.Mat();
-                    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+            // Use OpenCV.js to process the image
+            const src = cv.imread(canvas);
+            const gray = new cv.Mat();
+            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
 
-                    // (Optional) Apply thresholding to isolate blocks
-                    const thresh = new cv.Mat();
-                    cv.threshold(gray, thresh, 120, 255, cv.THRESH_BINARY);
+            // Threshold the image to simplify it
+            const thresh = new cv.Mat();
+            cv.threshold(gray, thresh, 120, 255, cv.THRESH_BINARY);
 
-                    // Detect grid, blocks, or patterns here using contour detection or other methods
-                    const contours = new cv.MatVector();
-                    const hierarchy = new cv.Mat();
-                    cv.findContours(thresh, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+            // Find contours (basic block detection)
+            const contours = new cv.MatVector();
+            const hierarchy = new cv.Mat();
+            cv.findContours(thresh, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
 
-                    // Example: Count contours (blocks)
-                    suggestedMoves.textContent = `Detected ${contours.size()} potential blocks.`;
-                    
-                    // Cleanup
-                    src.delete();
-                    gray.delete();
-                    thresh.delete();
-                    contours.delete();
-                    hierarchy.delete();
-                };
-            };
-            reader.readAsDataURL(imageInput.files[0]);
-        });
+            // Output the number of detected blocks
+            suggestedMoves.textContent = `Detected ${contours.size()} potential blocks.`;
+
+            // Cleanup
+            src.delete();
+            gray.delete();
+            thresh.delete();
+            contours.delete();
+            hierarchy.delete();
+
+            outputDiv.hidden = false;
+        };
+    };
+    reader.readAsDataURL(imageInput.files[0]);
+});
+
     </script>
 </body>
 </html>
