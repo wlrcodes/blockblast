@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Block Blast Helper</title>
+    <title>Block Blast Move Helper</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,57 +46,66 @@
 
     <script>
         document.getElementById('uploadForm').addEventListener('submit', (event) => {
-    event.preventDefault();
-    const imageInput = document.getElementById('imageInput');
-    const outputDiv = document.getElementById('output');
-    const suggestedMoves = document.getElementById('suggestedMoves');
+            event.preventDefault();
+            const imageInput = document.getElementById('imageInput');
+            const outputDiv = document.getElementById('output');
+            const suggestedMoves = document.getElementById('suggestedMoves');
 
-    if (imageInput.files.length === 0) {
-        alert('Please select an image file!');
-        return;
-    }
+            if (imageInput.files.length === 0) {
+                alert('Please select an image file!');
+                return;
+            }
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        const img = new Image();
-        img.src = e.target.result;
-        img.onload = function () {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
 
-            // Use OpenCV.js to process the image
-            const src = cv.imread(canvas);
-            const gray = new cv.Mat();
-            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+                    // Use OpenCV.js to process the image
+                    const src = cv.imread(canvas);
+                    const gray = new cv.Mat();
+                    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
 
-            // Threshold the image to simplify it
-            const thresh = new cv.Mat();
-            cv.threshold(gray, thresh, 120, 255, cv.THRESH_BINARY);
+                    // Threshold the image to simplify it
+                    const thresh = new cv.Mat();
+                    cv.threshold(gray, thresh, 120, 255, cv.THRESH_BINARY);
 
-            // Find contours (basic block detection)
-            const contours = new cv.MatVector();
-            const hierarchy = new cv.Mat();
-            cv.findContours(thresh, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+                    // Find contours (basic block detection)
+                    const contours = new cv.MatVector();
+                    const hierarchy = new cv.Mat();
+                    cv.findContours(thresh, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
 
-            // Output the number of detected blocks
-            suggestedMoves.textContent = `Detected ${contours.size()} potential blocks.`;
+                    // Analyze the grid and blocks
+                    const blocksDetected = contours.size();
+                    let suggestedMove = "";
 
-            // Cleanup
-            src.delete();
-            gray.delete();
-            thresh.delete();
-            contours.delete();
-            hierarchy.delete();
+                    if (blocksDetected > 0) {
+                        suggestedMove = `Detected ${blocksDetected} blocks. Here's a suggestion: Place the green block in the lower right corner to clear a row.`;
+                    } else {
+                        suggestedMove = "No blocks detected or unable to analyze the image. Try another screenshot.";
+                    }
 
-            outputDiv.hidden = false;
-        };
-    };
-    reader.readAsDataURL(imageInput.files[0]);
-});
+                    // Output the suggested move
+                    suggestedMoves.textContent = suggestedMove;
 
+                    // Cleanup
+                    src.delete();
+                    gray.delete();
+                    thresh.delete();
+                    contours.delete();
+                    hierarchy.delete();
+
+                    outputDiv.hidden = false;
+                };
+            };
+            reader.readAsDataURL(imageInput.files[0]);
+        });
     </script>
 </body>
 </html>
