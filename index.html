@@ -133,17 +133,55 @@
 
         function analyzeBoard(thresh) {
             // Logic to analyze the board state
-            return { grid: "empty", occupiedCells: [] };
+            // For simplicity, create a mock board state
+            return {
+                grid: Array(10).fill(null).map(() => Array(10).fill(0)),
+                occupiedCells: [[3, 4], [3, 5], [4, 4], [4, 5]] // Example occupied cells
+            };
         }
 
         function detectBlocks(thresh) {
-            // Logic to detect available blocks at the bottom of the image
-            return ["green", "blue", "red"];
+            // Logic to detect available blocks
+            // Return mock available blocks for simplicity
+            return [
+                { shape: [[1, 1]], color: 'green' },
+                { shape: [[1, 1], [1, 1]], color: 'blue' },
+                { shape: [[1, 1, 1]], color: 'red' }
+            ];
         }
 
         function calculateBestMove(boardState, availableBlocks) {
-            // Logic to calculate the best move based on the board state and available blocks
-            return `Place the ${availableBlocks[0]} block in the best position.`;
+            const { grid, occupiedCells } = boardState;
+
+            for (const block of availableBlocks) {
+                const { shape, color } = block;
+                for (let row = 0; row < grid.length; row++) {
+                    for (let col = 0; col < grid[row].length; col++) {
+                        if (canPlaceBlock(grid, row, col, shape)) {
+                            return `Place the ${color} block starting at row ${row + 1}, column ${col + 1}.`;
+                        }
+                    }
+                }
+            }
+
+            return "No valid moves available.";
+        }
+
+        function canPlaceBlock(grid, startRow, startCol, shape) {
+            for (let i = 0; i < shape.length; i++) {
+                for (let j = 0; j < shape[i].length; j++) {
+                    const r = startRow + i;
+                    const c = startCol + j;
+
+                    if (shape[i][j] === 1) {
+                        if (r >= grid.length || c >= grid[r].length || grid[r][c] !== 0) {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
     </script>
 </body>
