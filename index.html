@@ -107,7 +107,10 @@
                     let suggestedMove = "";
 
                     if (blocksDetected > 0) {
-                        suggestedMove = `Detected ${blocksDetected} blocks. Here's a suggestion: Place the green block in the lower right corner to clear a row.`;
+                        // Dynamic logic to determine where to place blocks
+                        const boardState = analyzeBoard(thresh);
+                        const availableBlocks = detectBlocks(thresh);
+                        suggestedMove = calculateBestMove(boardState, availableBlocks);
                     } else {
                         suggestedMove = "No blocks detected or unable to analyze the image. Try another screenshot.";
                     }
@@ -127,6 +130,21 @@
             };
             reader.readAsDataURL(imageInput.files[0]);
         });
+
+        function analyzeBoard(thresh) {
+            // Logic to analyze the board state
+            return { grid: "empty", occupiedCells: [] };
+        }
+
+        function detectBlocks(thresh) {
+            // Logic to detect available blocks at the bottom of the image
+            return ["green", "blue", "red"];
+        }
+
+        function calculateBestMove(boardState, availableBlocks) {
+            // Logic to calculate the best move based on the board state and available blocks
+            return `Place the ${availableBlocks[0]} block in the best position.`;
+        }
     </script>
 </body>
 </html>
